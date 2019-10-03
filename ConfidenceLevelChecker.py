@@ -87,15 +87,9 @@ def gather_text_per_reference(matched_files, report_path):
             # match_text = re.findall(r'^\w+[^ ]+ \w+[^,]+,[^,]+,', line)
             match_text = re.findall(r'^\w+.*,', line)
 
-            # print(f"match text: {match_text}|{wms_job_name}")
-            # breakpoint()
-
             if len(match_text) > 0:
                 complete_text = match_text[0]
                 complete_text = str(complete_text).replace('(','\(').replace(')','\)')
-
-                # print(f"complete text: {complete_text}")
-                # breakpoint()
 
                 complete_list_matched_files.append(ConfidenceLevelListClass.ConfidenceLevelList(wms_job_name,
                                                                                                 complete_text, None))
