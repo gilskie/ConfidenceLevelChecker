@@ -10,8 +10,8 @@ import csv
 def main():
     config = configparser.ConfigParser()
 
-    # config_location = sys.path[0] + '\configuration.ini'
-    config_location = sys.executable.replace('ConfidenceLevelChecker.exe', 'configuration.ini')
+    config_location = sys.path[0] + '\configuration.ini'
+    # config_location = sys.executable.replace('ConfidenceLevelChecker.exe', 'configuration.ini')
 
     config.read(config_location)
 
@@ -85,6 +85,7 @@ def gather_references_api_and_dsd(matched_files,
 
 # gather the text matching on the regular expression!
 def gather_text_per_reference(matched_files, report_path):
+    print(f"Gathering candidates for comparison.")
     complete_list_matched_files = []
 
     for wms_job_name in matched_files:
@@ -96,7 +97,15 @@ def gather_text_per_reference(matched_files, report_path):
 
             if len(match_text) > 0:
                 complete_text = match_text[0]
-                complete_text = str(complete_text).replace('(','\(').replace(')','\)')
+                complete_text = str(complete_text).replace('(','\(')\
+                    .replace(')','\)')\
+                    .replace('[','\[')\
+                    .replace(']','\]')\
+                    .replace('.','\.')\
+                    .replace('-','\-')\
+                    .replace('*','\*')\
+                    .replace('?','\?')\
+                    .replace('^','\^')
 
                 complete_list_matched_files.append(ConfidenceLevelListClass.ConfidenceLevelList(wms_job_name,
                                                                                                 complete_text, None))
@@ -117,12 +126,17 @@ def generate_match_per_confidence(complete_list_matched_files):
                         mode="rt")
 
         for line in api_temp:
-            match_text = re.findall(r'(<brs:r [^>]+>)' + list_match.match_text, line)
+            # match_text = re.findall(r'(<brs:r [^>]+>)' + list_match.match_text, line)
+            match_texts = re.findall(r'(<brs:r c="[0-9]+\.[0-9]+">)' + list_match.match_text, line)
+            # print(f"{list_match.match_text}")
+            # print(f"list: {list_match.match_text}")
+
             # print(f"(<brs:r [^>]+>){list_match.match_text}, match text:{match_text}")
             # breakpoint()
 
-            if len(match_text) > 0:
-                list_match.confidence_level = match_text[0]
+            if len(match_texts) > 0:
+                # print(f"match text: {match_texts[0]}, {list_match.match_text}")
+                list_match.confidence_level = match_texts[0]
                 # print(f"Match: {match_text[0]}, actual text: {list_match.match_text}, job-name: {list_match.jobname}")
 
 
