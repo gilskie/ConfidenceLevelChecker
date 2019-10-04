@@ -9,7 +9,10 @@ import csv
 
 def main():
     config = configparser.ConfigParser()
-    config_location = sys.path[0] + '\configuration.ini'
+
+    # config_location = sys.path[0] + '\configuration.ini'
+    config_location = sys.executable.replace('ConfidenceLevelChecker.exe', 'configuration.ini')
+
     config.read(config_location)
 
     default_setting = config["DEFAULT"]
@@ -27,6 +30,8 @@ def main():
         if file_name in dsd_files:
             matched_files.append(file_name.replace('.out',''))
 
+    print(f"Gathering matched {len(matched_files)} file(s).")
+
     gather_references_api_and_dsd(matched_files,
                                   api_caller_folder_location,
                                   dsd_no_correction_location,
@@ -38,6 +43,8 @@ def gather_references_api_and_dsd(matched_files,
                                   api_path,
                                   dsd_path,
                                   report_path):
+
+    print(f"Normalizing texts for references.")
 
     for file in matched_files:
         api_file_name = file + '.xml'
@@ -95,6 +102,9 @@ def gather_text_per_reference(matched_files, report_path):
                                                                                                 complete_text, None))
 
     generate_match_per_confidence(complete_list_matched_files)
+
+    print(f"Generating .csv report at {report_path}")
+
     generate_csv_report(report_path, complete_list_matched_files)
 
 
