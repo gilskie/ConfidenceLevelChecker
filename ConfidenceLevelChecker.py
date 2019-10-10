@@ -51,8 +51,8 @@ def gather_references_api_and_dsd(matched_files,
         dsd_file_name = file + '.out'
 
         # pattern below to be used for searching and replacing of texts.
-        api_replace_texts = '(<brs:s l="[a-z]+">|&amp;amp;|</brs:s>|&amp;)'
-        dsd_replace_texts = '(</?\w+([^>]+>|>)|&amp;amp;|&amp;)'
+        api_replace_texts = '(<brs:s l="[a-z]+">|&amp;amp;|</brs:s>|&amp;|amp;)'
+        dsd_replace_texts = '(</?\w+([^>]+>|>)|&amp;amp;|&amp;|amp;)'
         # dsd_replace_texts = '(amp;|</?\w+([^>]+>|>)|&amp;amp;|&amp;)'
 
         api_input_file = open(os.path.join(api_path, api_file_name),
@@ -105,7 +105,9 @@ def gather_text_per_reference(matched_files, report_path):
                     .replace('-','\-')\
                     .replace('*','\*')\
                     .replace('?','\?')\
-                    .replace('^','\^')
+                    .replace('^','\^')\
+                    .replace('amp;','').\
+                    replace('  ',' ')
 
                 complete_list_matched_files.append(ConfidenceLevelListClass.ConfidenceLevelList(wms_job_name,
                                                                                                 complete_text, None))
@@ -159,6 +161,7 @@ def generate_search_and_replace(input_file,
     for line in input_file:
         # start replacing texts to have match!
         temp_line = re.sub(replace_text, '', line)
+        temp_line = temp_line.replace('  ', ' ')
         output_temp.write(temp_line if len(temp_line) > 0 else line)
 
 
